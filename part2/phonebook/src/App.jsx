@@ -3,12 +3,14 @@ import personService from './services/persons'
 import PersonForm from './components/PersonForm'
 import Filter from './components/Filter'
 import Persons from './components/Persons'
+import Notification from './components/Notification'
 
 const App = () => {
   const [persons, setPersons] = useState([]) 
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [search, setSearch] = useState('')
+  const [message, setMessage] = useState(null)
 
   const getPersons = () => {
     personService
@@ -38,6 +40,12 @@ const App = () => {
             setPersons(persons.map(person => person.id !== samePerson.id ? person : updatedPerson))
             setNewName('')
             setNewNumber('')
+            setMessage(
+              `Updated ${personObject.name}`
+            )
+            setTimeout(() => {
+              setMessage(null)
+            }, 5000)
           })
       }
     }
@@ -48,7 +56,14 @@ const App = () => {
           setPersons(persons.concat(person))
           setNewName('')
           setNewNumber('')
-        }) 
+          setMessage(
+            `Added ${personObject.name}`
+          )
+          setTimeout(() => {
+            setMessage(null)
+          }, 5000)
+        })
+
     } 
   }
 
@@ -83,6 +98,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message}/>
       <Filter search={search} handleSearchChange={handleSearchChange} />
       <h2>add a new</h2>
       <PersonForm
