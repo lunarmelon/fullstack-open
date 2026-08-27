@@ -56,15 +56,30 @@ app.delete("/api/persons/:id", (request, response) => {
 	response.status(204).end();
 });
 
+const generateId = () => {
+	return String(Math.floor(Math.random() * 100000));
+};
+
 app.post("/api/persons", (request, response) => {
-	function getRandomInt(max) {
-		return Math.floor(Math.random() * max);
+	const body = request.body;
+
+	if (!body.name || !body.number) {
+		return response.status(400).json({
+			error: "name or number missing",
+		});
 	}
 
-	const id = persons.length > 0 ? getRandomInt(100000) : 0;
+	if (persons.find((person) => person.name === body.name)) {
+		return response.status(400).json({
+			error: "name must be unique",
+		});
+	}
 
-	const person = request.body;
-	person.id = String(id);
+	const person = {
+		name: body.name,
+		number: body.number,
+		id: generateId(),
+	};
 
 	persons = persons.concat(person);
 
