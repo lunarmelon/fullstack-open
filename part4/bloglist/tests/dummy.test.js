@@ -79,3 +79,74 @@ describe("total likes", () => {
 		assert.strictEqual(result, 150);
 	});
 });
+
+describe("most liked blog", () => {
+	const listWithOneBlog = [
+		{
+			_id: "5a422aa71b54a676234d17f8",
+			title: "Go To Statement Considered Harmful",
+			author: "Edsger W. Dijkstra",
+			url: "https://homepages.cwi.nl/~storm/teaching/reader/Dijkstra68.pdf",
+			likes: 5,
+			__v: 0,
+		},
+	];
+
+	const biggerList = [
+		{
+			_id: "5a422aa71b54a676234d17f8",
+			title: "Go To Statement Considered Harmful",
+			author: "Edsger W. Dijkstra",
+			url: "https://homepages.cwi.nl/~storm/teaching/reader/Dijkstra68.pdf",
+			likes: 54,
+			__v: 0,
+		},
+		{
+			_id: "5a422aa71b54a676234d17f9",
+			title: "Blog 2",
+			author: "Phoenix Wright",
+			url: "https://homepages.cwi.nl/~storm/teaching/reader/Dijkstra68.pdf",
+			likes: 9,
+			__v: 0,
+		},
+		{
+			_id: "5a422aa71b54a676234d17e8",
+			title: "Go To Statement Considered Harmful",
+			author: "Apollo Justice",
+			url: "https://homepages.cwi.nl/~storm/teaching/reader/Dijkstra68.pdf",
+			likes: 52,
+			__v: 0,
+		},
+		{
+			_id: "5a422aa71b54a676234d17l8",
+			title: "Go To Statement Considered Harmful",
+			author: "Miles Edgeworth",
+			url: "https://homepages.cwi.nl/~storm/teaching/reader/Dijkstra68.pdf",
+			likes: 23,
+			__v: 0,
+		},
+		{
+			_id: "5a422aa71b54a676234d17a8",
+			title: "Go To Statement Considered Harmful",
+			author: "Franziska von Karma",
+			url: "https://homepages.cwi.nl/~storm/teaching/reader/Dijkstra68.pdf",
+			likes: 12,
+			__v: 0,
+		},
+	];
+
+	test("of empty list is none", () => {
+		const result = listHelper.favoriteBlog([]);
+		assert.deepStrictEqual(result, {});
+	});
+
+	test("when list has only one blog, return that blog", () => {
+		const result = listHelper.favoriteBlog(listWithOneBlog);
+		assert.deepStrictEqual(result, listWithOneBlog[0]);
+	});
+
+	test("of a bigger list, returns at least one", () => {
+		const result = listHelper.favoriteBlog(biggerList);
+		assert.deepStrictEqual(result, biggerList[0]);
+	});
+});
