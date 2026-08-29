@@ -43,6 +43,29 @@ test("a specific blog can be viewed", async () => {
 	assert.deepStrictEqual(resultBlog.body, blogToView);
 });
 
+test("a valid blog can be added", async () => {
+	const newBlog = {
+		title: "Go To Statement Considered Harmful",
+		author: "Miles Edgeworth",
+		url: "https://homepages.cwi.nl/~storm/teaching/reader/Dijkstra68.pdf",
+		likes: 23,
+	};
+
+	await api
+		.post("/api/blogs")
+		.send(newBlog)
+		.expect(201)
+		.expect("Content-Type", /application\/json/);
+
+	const response = await api.get("/api/blogs");
+
+	const contents = response.body.map((r) => r.author);
+
+	assert.strictEqual(response.body.length, helper.initialBlogs.length + 1);
+
+	assert(contents.includes("Miles Edgeworth"));
+});
+
 after(async () => {
 	await mongoose.connection.close();
 });
