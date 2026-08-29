@@ -108,6 +108,26 @@ test("a blog can be deleted", async () => {
 	assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length - 1);
 });
 
+test("a blog can be updated", async () => {
+	const blogsAtStart = await helper.blogsInDb();
+	const blogToUpdate = blogsAtStart[1];
+
+	const updatedData = {
+		title: blogToUpdate.title,
+		author: blogToUpdate.author,
+		url: blogToUpdate.url,
+		likes: 23,
+	};
+
+	const updatedBlog = await api
+		.put(`/api/blogs/${blogToUpdate.id}`)
+		.send(updatedData)
+		.expect(200)
+		.expect("Content-Type", /application\/json/);
+
+	assert(updatedBlog.body.likes, 9);
+});
+
 after(async () => {
 	await mongoose.connection.close();
 });
