@@ -5,18 +5,30 @@ const User = require("../models/user");
 usersRouter.post("/", async (request, response) => {
 	const { username, name, password } = request.body;
 
-	const saltRounds = 10;
-	const passwordHash = await bcrypt.hash(password, saltRounds);
+	if (!username || !password) {
+		response.status(400).json({ error: "username or password missing" });
+	}
 
-	const user = new User({
-		username,
-		name,
-		passwordHash,
-	});
+	if (username.length >= 3 && password.length >= 3) {
+		const saltRounds = 10;
+		const passwordHash = await bcrypt.hash(password, saltRounds);
 
-	const savedUser = await user.save();
+		const user = new User({
+			username,
+			name,
+			passwordHash,
+		});
 
-	response.status(201).json(savedUser);
+		const savedUser = await user.save();
+
+		response.status(201).json(savedUser);
+	} else {
+		response
+			.status(400)
+			.json({
+				error: "username and password must be at least 3 characters long",
+			});
+	}
 });
 
 usersRouter.get("/", async (request, response) => {
