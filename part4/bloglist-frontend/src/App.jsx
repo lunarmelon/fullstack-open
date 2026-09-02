@@ -8,9 +8,6 @@ import loginService from "./services/login";
 const App = () => {
 	const [blogFormVisible, setBlogFormVisible] = useState(false);
 	const [blogs, setBlogs] = useState([]);
-	const [title, setTitle] = useState("");
-	const [author, setAuthor] = useState("");
-	const [url, setUrl] = useState("");
 	const [message, setMessage] = useState(null);
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
@@ -29,20 +26,12 @@ const App = () => {
 		}
 	}, []);
 
-	const addBlog = (event) => {
-		event.preventDefault();
-		const blogObject = {
-			title: title,
-			author: author,
-			url: url,
-		};
-
+	const addBlog = (blogObject) => {
 		blogService.create(blogObject).then((returnedBlog) => {
 			setBlogs(blogs.concat(returnedBlog));
-			setMessage(`a new blog ${title} by ${author} added`);
-			setTitle("");
-			setAuthor("");
-			setUrl("");
+			setMessage(
+				`a new blog ${blogObject.title} by ${blogObject.author} added`,
+			);
 			setTimeout(() => {
 				setMessage(null);
 			}, 5000);
@@ -113,15 +102,7 @@ const App = () => {
 					</button>
 				</div>
 				<div style={showWhenVisible}>
-					<BlogForm
-						handleSubmit={addBlog}
-						title={title}
-						handleTitleChange={({ target }) => setTitle(target.value)}
-						author={author}
-						handleAuthorChange={({ target }) => setAuthor(target.value)}
-						url={url}
-						handleUrlChange={({ target }) => setUrl(target.value)}
-					/>
+					<BlogForm createBlog={addBlog} />
 					<button onClick={() => setBlogFormVisible(false)}>cancel</button>
 				</div>
 			</div>
