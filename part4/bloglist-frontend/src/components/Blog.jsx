@@ -12,11 +12,9 @@ const Blog = ({ blog, addLike, removeBlog }) => {
 	};
 
 	const hideWhenVisible = {
-		...blogStyle,
 		display: detailsVisible ? "none" : "",
 	};
 	const showWhenVisible = {
-		...blogStyle,
 		display: detailsVisible ? "" : "none",
 	};
 
@@ -43,25 +41,29 @@ const Blog = ({ blog, addLike, removeBlog }) => {
 
 	return (
 		<div>
-			<div style={hideWhenVisible}>
+			<div style={blogStyle}>
 				{blog.title} {blog.author}
-				<button onClick={() => setDetailsVisible(true)}>view</button>
-			</div>
-			<div style={showWhenVisible}>
-				{blog.title} {blog.author}
-				<button onClick={() => setDetailsVisible(false)}>hide</button>
-				<br />
-				{blog.url}
-				<br />
-				likes {blog.likes} <button onClick={updateBlog}>like</button>
-				<br />
-				{blog?.user?.name}
-				<br />
-				<button onClick={deleteBlog}>remove</button>
+				<button style={hideWhenVisible} onClick={() => setDetailsVisible(true)}>
+					view
+				</button>
+				<button
+					style={showWhenVisible}
+					onClick={() => setDetailsVisible(false)}
+				>
+					hide
+				</button>
+				<div style={showWhenVisible}>
+					{blog.url}
+					<br />
+					likes {blog.likes} <button onClick={updateBlog}>like</button>
+					<br />
+					{blog?.user?.name}
+					<br />
+					<button onClick={deleteBlog}>remove</button>
+				</div>
 			</div>
 		</div>
 	);
 };
 
 export default Blog;
-
