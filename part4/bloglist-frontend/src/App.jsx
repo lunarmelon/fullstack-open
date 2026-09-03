@@ -41,7 +41,13 @@ const App = () => {
 	const updateBlog = (blogObject, id) => {
 		blogService.update(blogObject, id).then((returnedBlog) => {
 			setBlogs(blogs.map((blog) => (blog.id === id ? returnedBlog : blog)));
+			blogService.getAll().then((blogs) => setBlogs(blogs));
 		});
+	};
+
+	const deleteBlog = (id) => {
+		blogService.remove(id);
+		blogService.getAll().then((blogs) => setBlogs(blogs));
 	};
 
 	const handleLogin = async (event) => {
@@ -103,12 +109,16 @@ const App = () => {
 	);
 
 	const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes);
-
 	const blogList = () => (
 		<div>
 			<h2>blogs</h2>
 			{sortedBlogs.map((blog) => (
-				<Blog key={blog.id} blog={blog} addLike={updateBlog} />
+				<Blog
+					key={blog.id}
+					blog={blog}
+					addLike={updateBlog}
+					removeBlog={deleteBlog}
+				/>
 			))}
 		</div>
 	);

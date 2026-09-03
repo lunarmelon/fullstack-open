@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const Blog = ({ blog, addLike }) => {
+const Blog = ({ blog, addLike, removeBlog }) => {
 	const [detailsVisible, setDetailsVisible] = useState(false);
 
 	const blogStyle = {
@@ -34,6 +34,13 @@ const Blog = ({ blog, addLike }) => {
 		);
 	};
 
+	const deleteBlog = (event) => {
+		event.preventDefault();
+		if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
+			removeBlog(blog.id);
+		}
+	};
+
 	return (
 		<div>
 			<div style={hideWhenVisible}>
@@ -49,6 +56,8 @@ const Blog = ({ blog, addLike }) => {
 				likes {blog.likes} <button onClick={updateBlog}>like</button>
 				<br />
 				{blog?.user?.name}
+				<br />
+				<button onClick={deleteBlog}>remove</button>
 			</div>
 		</div>
 	);
