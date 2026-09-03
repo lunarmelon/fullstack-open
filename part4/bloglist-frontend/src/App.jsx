@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Blog from "./components/Blog";
 import BlogForm from "./components/BlogForm";
 import Notification from "./components/Notification";
+import Togglable from "./components/Togglable";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
 
@@ -90,24 +91,11 @@ const App = () => {
 		</div>
 	);
 
-	const blogForm = () => {
-		const hideWhenVisible = { display: blogFormVisible ? "none" : "" };
-		const showWhenVisible = { display: blogFormVisible ? "" : "none" };
-
-		return (
-			<div>
-				<div style={hideWhenVisible}>
-					<button onClick={() => setBlogFormVisible(true)}>
-						create new blog
-					</button>
-				</div>
-				<div style={showWhenVisible}>
-					<BlogForm createBlog={addBlog} />
-					<button onClick={() => setBlogFormVisible(false)}>cancel</button>
-				</div>
-			</div>
-		);
-	};
+	const blogForm = () => (
+		<Togglable buttonLabel="create blog">
+			<BlogForm createBlog={addBlog} />
+		</Togglable>
+	);
 
 	const blogList = () => (
 		<div>
