@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import Blog from "./Blog";
 
 describe("<Blog />", () => {
@@ -12,7 +13,7 @@ describe("<Blog />", () => {
 		render(<Blog blog={blog} />);
 	});
 
-	test("<Blog/> only renders the blog's title and author by default", () => {
+	test("only renders the blog's title and author by default", () => {
 		expect(
 			screen.getByText(/Go To Statement Considered Harmful/),
 		).toBeVisible();
@@ -20,5 +21,14 @@ describe("<Blog />", () => {
 
 		expect(screen.getByText(/homepages.cwi.nl/)).not.toBeVisible();
 		expect(screen.getByText(/likes 23/)).not.toBeVisible();
+	});
+
+	test("after clicking the button, url and likes are displayed", async () => {
+		const user = userEvent.setup();
+		const button = screen.getByText("view");
+		await user.click(button);
+
+		expect(screen.getByText(/homepages.cwi.nl/)).toBeVisible();
+		expect(screen.getByText(/likes 23/)).toBeVisible();
 	});
 });
