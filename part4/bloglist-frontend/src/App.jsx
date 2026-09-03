@@ -7,7 +7,6 @@ import blogService from "./services/blogs";
 import loginService from "./services/login";
 
 const App = () => {
-	const [blogFormVisible, setBlogFormVisible] = useState(false);
 	const [blogs, setBlogs] = useState([]);
 	const [message, setMessage] = useState(null);
 	const [username, setUsername] = useState("");
@@ -36,6 +35,12 @@ const App = () => {
 			setTimeout(() => {
 				setMessage(null);
 			}, 5000);
+		});
+	};
+
+	const updateBlog = (blogObject, id) => {
+		blogService.update(blogObject, id).then((returnedBlog) => {
+			setBlogs(blogs.map((blog) => (blog.id === id ? returnedBlog : blog)));
 		});
 	};
 
@@ -101,7 +106,7 @@ const App = () => {
 		<div>
 			<h2>blogs</h2>
 			{blogs.map((blog) => (
-				<Blog key={blog.id} blog={blog} />
+				<Blog key={blog.id} blog={blog} addLike={updateBlog} />
 			))}
 		</div>
 	);
