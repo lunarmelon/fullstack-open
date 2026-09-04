@@ -59,5 +59,22 @@ describe("Blog app", () => {
 			).toBeVisible();
 			await expect(page.getByText("Blog 1 Diego Armando")).toBeVisible();
 		});
+
+		test("a blog can be liked", async ({ page }) => {
+			await page.getByRole("button", { name: "create blog" }).click();
+			await page.getByLabel("title").fill("Blog 1");
+			await page.getByLabel("author").fill("Diego Armando");
+			await page.getByLabel("url").fill("https://neocities.org");
+			await page.getByRole("button", { name: "create" }).click();
+
+			await expect(
+				page.getByText("a new blog Blog 1 by Diego Armando added"),
+			).toBeVisible();
+			await expect(page.getByText("Blog 1 Diego Armando")).toBeVisible();
+
+			await page.getByRole("button", { name: "view" }).click();
+			await page.getByRole("button", { name: "like" }).click();
+			await expect(page.getByText("likes 1")).toBeVisible();
+		});
 	});
 });
