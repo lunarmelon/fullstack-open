@@ -21,6 +21,7 @@ describe("Blog app", () => {
 
 	describe("Login", () => {
 		test("succeeds with correct credentials", async ({ page }) => {
+			await page.getByRole("button", { name: "login" }).click();
 			await page.getByLabel("username").fill("flyingattorney");
 			await page.getByLabel("password").fill("edgelove");
 			await page.getByRole("button", { name: "login" }).click();
@@ -35,6 +36,28 @@ describe("Blog app", () => {
 			await page.getByRole("button", { name: "login" }).click();
 
 			await expect(page.getByText("wrong credentials")).toBeVisible();
+		});
+	});
+
+	describe("When logged in", () => {
+		beforeEach(async ({ page }) => {
+			await page.getByRole("button", { name: "login" }).click();
+			await page.getByLabel("username").fill("flyingattorney");
+			await page.getByLabel("password").fill("edgelove");
+			await page.getByRole("button", { name: "login" }).click();
+		});
+
+		test("a new blog can be created", async ({ page }) => {
+			await page.getByRole("button", { name: "create blog" }).click();
+			await page.getByLabel("title").fill("Blog 1");
+			await page.getByLabel("author").fill("Diego Armando");
+			await page.getByLabel("url").fill("https://neocities.org");
+			await page.getByRole("button", { name: "create" }).click();
+
+			await expect(
+				page.getByText("a new blog Blog 1 by Diego Armando added"),
+			).toBeVisible();
+			await expect(page.getByText("Blog 1 Diego Armando")).toBeVisible();
 		});
 	});
 });

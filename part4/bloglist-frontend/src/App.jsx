@@ -134,7 +134,7 @@ const App = () => {
 					{blogForm()}
 				</div>
 			)}
-			{user && blogList()}
+			<div className="bloglist">{user && blogList()}</div>
 		</div>
 	);
 };
