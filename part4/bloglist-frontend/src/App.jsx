@@ -125,7 +125,7 @@ const App = () => {
 
 	return (
 		<div>
-			<Notification message={message} />
+			<Notification className="notification" message={message} />
 			{!user && loginForm()}
 			{user && (
 				<div>
