@@ -1,16 +1,17 @@
 const { test, expect, beforeEach, describe } = require("@playwright/test");
+const { createBlog, loginWith } = require("./helper");
 
 describe("Blog app", () => {
 	beforeEach(async ({ page, request }) => {
-		await request.post("http://localhost:3003/api/testing/reset");
-		await request.post("http://localhost:3003/api/users", {
+		await request.post("api/testing/reset");
+		await request.post("/api/users", {
 			data: {
 				name: "Phoenix Wright",
 				username: "flyingattorney",
 				password: "edgelove",
 			},
 		});
-		await request.post("http://localhost:3003/api/users", {
+		await request.post("/api/users", {
 			data: {
 				name: "Athena Cykes",
 				username: "metisapollo",
@@ -18,7 +19,7 @@ describe("Blog app", () => {
 			},
 		});
 
-		await page.goto("http://localhost:5173");
+		await page.goto("/");
 	});
 
 	test("Login form is shown", async ({ page }) => {
@@ -48,18 +49,17 @@ describe("Blog app", () => {
 
 	describe("When logged in", () => {
 		beforeEach(async ({ page }) => {
-			await page.getByRole("button", { name: "login" }).click();
-			await page.getByLabel("username").fill("flyingattorney");
-			await page.getByLabel("password").fill("edgelove");
-			await page.getByRole("button", { name: "login" }).click();
+			await loginWith(page, "flyingattorney", "edgelove");
 		});
 
 		test("a new blog can be created", async ({ page }) => {
 			await page.getByRole("button", { name: "create blog" }).click();
-			await page.getByLabel("title").fill("Blog 1");
-			await page.getByLabel("author").fill("Diego Armando");
-			await page.getByLabel("url").fill("https://neocities.org");
-			await page.getByRole("button", { name: "create" }).click();
+			await createBlog(
+				page,
+				"Blog 1",
+				"Diego Armando",
+				"https://neocities.org",
+			);
 
 			await expect(
 				page.getByText("a new blog Blog 1 by Diego Armando added"),
@@ -69,10 +69,12 @@ describe("Blog app", () => {
 
 		test("a blog can be liked", async ({ page }) => {
 			await page.getByRole("button", { name: "create blog" }).click();
-			await page.getByLabel("title").fill("Blog 1");
-			await page.getByLabel("author").fill("Diego Armando");
-			await page.getByLabel("url").fill("https://neocities.org");
-			await page.getByRole("button", { name: "create" }).click();
+			await createBlog(
+				page,
+				"Blog 1",
+				"Diego Armando",
+				"https://neocities.org",
+			);
 
 			await expect(
 				page.getByText("a new blog Blog 1 by Diego Armando added"),
@@ -86,10 +88,12 @@ describe("Blog app", () => {
 
 		test("the user can delete a blog", async ({ page }) => {
 			await page.getByRole("button", { name: "create blog" }).click();
-			await page.getByLabel("title").fill("Blog 1");
-			await page.getByLabel("author").fill("Diego Armando");
-			await page.getByLabel("url").fill("https://neocities.org");
-			await page.getByRole("button", { name: "create" }).click();
+			await createBlog(
+				page,
+				"Blog 1",
+				"Diego Armando",
+				"https://neocities.org",
+			);
 
 			await expect(
 				page.getByText("a new blog Blog 1 by Diego Armando added"),
@@ -107,10 +111,12 @@ describe("Blog app", () => {
 			page,
 		}) => {
 			await page.getByRole("button", { name: "create blog" }).click();
-			await page.getByLabel("title").fill("Blog 1");
-			await page.getByLabel("author").fill("Diego Armando");
-			await page.getByLabel("url").fill("https://neocities.org");
-			await page.getByRole("button", { name: "create" }).click();
+			await createBlog(
+				page,
+				"Blog 1",
+				"Diego Armando",
+				"https://neocities.org",
+			);
 
 			await expect(
 				page.getByText("a new blog Blog 1 by Diego Armando added"),
@@ -122,15 +128,45 @@ describe("Blog app", () => {
 
 			await page.getByRole("button", { name: "logout" }).click();
 
-			await page.getByRole("button", { name: "login" }).click();
-			await page.getByLabel("username").fill("metisapollo");
-			await page.getByLabel("password").fill("blackquill");
-			await page.getByRole("button", { name: "login" }).click();
+			await loginWith(page, "metisapollo", "blackquill");
 
 			await page.getByRole("button", { name: "view" }).click();
 			await expect(
 				page.getByRole("button", { name: "remove" }),
 			).not.toBeVisible();
+		});
+
+		test("blogs are arranged by the number of likes, the blog with most likes first", async ({
+			page,
+		}) => {
+			await page.getByRole("button", { name: "create blog" }).click();
+			await createBlog(
+				page,
+				"Blog 1",
+				"Diego Armando",
+				"https://neocities.org",
+			);
+			await createBlog(page, "Blog 2", "Mia Fey", "https://google.com");
+			await createBlog(page, "Blog 3", "Trucy Wright", "https://x.com");
+
+			const blog1 = page.locator(".blog").filter({ hasText: "Blog 1" });
+
+			await blog1.getByRole("button", { name: "view" }).click();
+			await blog1.getByRole("button", { name: "like" }).click();
+			await blog1.getByText("likes 1").waitFor();
+			await blog1.getByRole("button", { name: "like" }).click();
+			await blog1.getByText("likes 2").waitFor();
+
+			var blog3 = page.locator(".blog").filter({ hasText: "Blog 3" });
+			await blog3.getByRole("button", { name: "view" }).click();
+			await blog3.getByRole("button", { name: "like" }).click();
+			await blog3.getByText("likes 1").waitFor();
+
+			const blogElements = page.locator(".blog");
+
+			await expect(blogElements.nth(0)).toContainText("Blog 1");
+			await expect(blogElements.nth(1)).toContainText("Blog 3");
+			await expect(blogElements.nth(2)).toContainText("Blog 2");
 		});
 	});
 });

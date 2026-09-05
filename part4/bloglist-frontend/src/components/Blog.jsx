@@ -3,12 +3,7 @@ import { useState } from "react";
 const Blog = ({ blog, addLike, removeBlog, user }) => {
 	const [detailsVisible, setDetailsVisible] = useState(false);
 
-	const isCreator = user.id === blog.user;
-	console.log(blog.user);
-	console.log(user.id);
-	//console.log(isCreator);
-	//console.log(user.username, blog.user.username);
-	//console.log(user.name, blog.user.name);
+	const isCreator = user.id === blog.user || user.id === blog.user?.id;
 
 	const blogStyle = {
 		paddingTop: 10,
@@ -47,7 +42,7 @@ const Blog = ({ blog, addLike, removeBlog, user }) => {
 	};
 
 	return (
-		<div>
+		<div className="blog">
 			<div style={blogStyle}>
 				{blog.title} {blog.author}
 				<button style={hideWhenVisible} onClick={() => setDetailsVisible(true)}>

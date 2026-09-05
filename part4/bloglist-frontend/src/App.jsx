@@ -81,7 +81,7 @@ const App = () => {
 			<form onSubmit={handleLogin}>
 				<div>
 					<label>
-						username{" "}
+						username
 						<input
 							type="text"
 							value={username}
