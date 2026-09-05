@@ -1,7 +1,14 @@
 import { useState } from "react";
 
-const Blog = ({ blog, addLike, removeBlog }) => {
+const Blog = ({ blog, addLike, removeBlog, user }) => {
 	const [detailsVisible, setDetailsVisible] = useState(false);
+
+	const isCreator = user.id === blog.user;
+	console.log(blog.user);
+	console.log(user.id);
+	//console.log(isCreator);
+	//console.log(user.username, blog.user.username);
+	//console.log(user.name, blog.user.name);
 
 	const blogStyle = {
 		paddingTop: 10,
@@ -59,7 +66,7 @@ const Blog = ({ blog, addLike, removeBlog }) => {
 					<br />
 					{blog?.user?.name}
 					<br />
-					<button onClick={deleteBlog}>remove</button>
+					{isCreator && <button onClick={deleteBlog}>remove</button>}
 				</div>
 			</div>
 		</div>

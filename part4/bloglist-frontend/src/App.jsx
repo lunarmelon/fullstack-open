@@ -71,6 +71,8 @@ const App = () => {
 	const handleLogout = async (event) => {
 		event.preventDefault();
 		window.localStorage.removeItem("loggedBlogappUser");
+		setUser(null);
+		blogService.setToken(null);
 	};
 
 	const loginForm = () => (
@@ -118,6 +120,7 @@ const App = () => {
 					blog={blog}
 					addLike={updateBlog}
 					removeBlog={deleteBlog}
+					user={user}
 				/>
 			))}
 		</div>
