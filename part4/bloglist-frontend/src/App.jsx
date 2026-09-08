@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { Link, Route, Routes, useNavigate } from "react-router-dom";
+import { Link, Route, Routes, useMatch, useNavigate } from "react-router-dom";
 import Blog from "./components/Blog";
 import BlogForm from "./components/BlogForm";
+import BlogList from "./components/BlogList";
 import LoginForm from "./components/LoginForm";
 import Notification from "./components/Notification";
 import Togglable from "./components/Togglable";
@@ -83,25 +84,12 @@ const App = () => {
 		</Togglable>
 	);
 
-	const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes);
-	const blogList = () => (
-		<div>
-			<h2>blogs</h2>
-			{sortedBlogs.map((blog) => (
-				<Blog
-					key={blog.id}
-					blog={blog}
-					addLike={updateBlog}
-					removeBlog={deleteBlog}
-					user={user}
-				/>
-			))}
-		</div>
-	);
-
 	const padding = {
 		padding: 5,
 	};
+
+	const match = useMatch("/blogs/:id");
+	const blog = match ? blogs.find((blog) => blog.id === match.params.id) : null;
 
 	return (
 		<div>
@@ -123,6 +111,17 @@ const App = () => {
 			</div>
 			<Routes>
 				<Route
+					path="/blogs/:id"
+					element={
+						<Blog
+							blog={blog}
+							addLike={updateBlog}
+							removeBlog={deleteBlog}
+							user={user}
+						/>
+					}
+				/>
+				<Route
 					path="/login"
 					element={
 						!user && (
@@ -138,7 +137,16 @@ const App = () => {
 				/>
 				<Route
 					path="/"
-					element={<div className="bloglist">{user && blogList()}</div>}
+					element={
+						<div className="bloglist">
+							<BlogList
+								blogs={blogs}
+								updateBlog={updateBlog}
+								deleteBlog={deleteBlog}
+								user={user}
+							/>
+						</div>
+					}
 				/>
 			</Routes>
 		</div>

@@ -1,9 +1,15 @@
 import { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
 const Blog = ({ blog, addLike, removeBlog, user }) => {
-	const [detailsVisible, setDetailsVisible] = useState(false);
+	const id = useParams().id;
+	const navigate = useNavigate();
 
-	const isCreator = user.id === blog.user || user.id === blog.user?.id;
+	if (!blog) {
+		return null;
+	}
+
+	const isCreator = user?.id === blog.user || user?.id === blog.user?.id;
 
 	const blogStyle = {
 		paddingTop: 10,
@@ -11,13 +17,6 @@ const Blog = ({ blog, addLike, removeBlog, user }) => {
 		border: "solid",
 		borderWidth: 1,
 		marginBottom: 5,
-	};
-
-	const hideWhenVisible = {
-		display: detailsVisible ? "none" : "",
-	};
-	const showWhenVisible = {
-		display: detailsVisible ? "" : "none",
 	};
 
 	const updateBlog = (event) => {
@@ -30,39 +29,30 @@ const Blog = ({ blog, addLike, removeBlog, user }) => {
 				title: blog.title,
 				url: blog.url,
 			},
-			blog.id,
+			id,
 		);
 	};
 
 	const deleteBlog = (event) => {
 		event.preventDefault();
 		if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
-			removeBlog(blog.id);
+			removeBlog(id);
 		}
 	};
 
 	return (
 		<div className="blog">
 			<div style={blogStyle}>
-				{blog.title} {blog.author}
-				<button style={hideWhenVisible} onClick={() => setDetailsVisible(true)}>
-					view
-				</button>
-				<button
-					style={showWhenVisible}
-					onClick={() => setDetailsVisible(false)}
-				>
-					hide
-				</button>
-				<div style={showWhenVisible}>
-					{blog.url}
-					<br />
-					likes {blog.likes} <button onClick={updateBlog}>like</button>
-					<br />
-					{blog?.user?.name}
-					<br />
-					{isCreator && <button onClick={deleteBlog}>remove</button>}
-				</div>
+				<h1>
+					{blog.author}: {blog.title}
+				</h1>
+				<a href={blog.url}>{blog.url}</a>
+				<br />
+				likes {blog.likes} {user && <button onClick={updateBlog}>like</button>}
+				<br />
+				{blog?.user?.name}
+				<br />
+				{isCreator && <button onClick={deleteBlog}>remove</button>}
 			</div>
 		</div>
 	);
