@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
+import { Link, Route, Routes, useNavigate } from "react-router-dom";
 import Blog from "./components/Blog";
 import BlogForm from "./components/BlogForm";
+import LoginForm from "./components/LoginForm";
 import Notification from "./components/Notification";
 import Togglable from "./components/Togglable";
 import blogService from "./services/blogs";
@@ -12,10 +14,7 @@ const App = () => {
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
 	const [user, setUser] = useState(null);
-
-	useEffect(() => {
-		blogService.getAll().then((blogs) => setBlogs(blogs));
-	}, []);
+	const navigate = useNavigate();
 
 	useEffect(() => {
 		const loggedUserJSON = window.localStorage.getItem("loggedBlogappUser");
@@ -24,6 +23,7 @@ const App = () => {
 			setUser(user);
 			blogService.setToken(user.token);
 		}
+		blogService.getAll().then((blogs) => setBlogs(blogs));
 	}, []);
 
 	const addBlog = (blogObject) => {
@@ -60,6 +60,7 @@ const App = () => {
 			setUser(user);
 			setUsername("");
 			setPassword("");
+			navigate("/");
 		} catch {
 			setMessage("wrong credentials");
 			setTimeout(() => {
@@ -73,36 +74,8 @@ const App = () => {
 		window.localStorage.removeItem("loggedBlogappUser");
 		setUser(null);
 		blogService.setToken(null);
+		navigate("/login");
 	};
-
-	const loginForm = () => (
-		<div>
-			<h2>Login</h2>
-			<form onSubmit={handleLogin}>
-				<div>
-					<label>
-						username
-						<input
-							type="text"
-							value={username}
-							onChange={({ target }) => setUsername(target.value)}
-						/>
-					</label>
-				</div>
-				<div>
-					<label>
-						password
-						<input
-							type="text"
-							value={password}
-							onChange={({ target }) => setPassword(target.value)}
-						/>
-					</label>
-				</div>
-				<button type="submit">login</button>
-			</form>
-		</div>
-	);
 
 	const blogForm = () => (
 		<Togglable buttonLabel="create blog">
@@ -126,18 +99,48 @@ const App = () => {
 		</div>
 	);
 
+	const padding = {
+		padding: 5,
+	};
+
 	return (
 		<div>
 			<Notification className="notification" message={message} />
-			{!user && loginForm()}
-			{user && (
-				<div>
-					<p>{user.name} logged in</p>
-					<button onClick={handleLogout}>logout</button>
-					{blogForm()}
-				</div>
-			)}
-			<div className="bloglist">{user && blogList()}</div>
+			<div>
+				<Link style={padding} to="/">
+					blogs
+				</Link>
+				{!user && (
+					<Link style={padding} to="/login">
+						login
+					</Link>
+				)}
+				{user && (
+					<button style={padding} onClick={handleLogout}>
+						logout
+					</button>
+				)}
+			</div>
+			<Routes>
+				<Route
+					path="/login"
+					element={
+						!user && (
+							<LoginForm
+								handleLogin={handleLogin}
+								username={username}
+								password={password}
+								handleUsername={({ target }) => setUsername(target.value)}
+								handlePassword={({ target }) => setPassword(target.value)}
+							/>
+						)
+					}
+				/>
+				<Route
+					path="/"
+					element={<div className="bloglist">{user && blogList()}</div>}
+				/>
+			</Routes>
 		</div>
 	);
 };
