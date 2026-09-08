@@ -1,9 +1,7 @@
-import { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 const Blog = ({ blog, addLike, removeBlog, user }) => {
 	const id = useParams().id;
-	const navigate = useNavigate();
 
 	if (!blog) {
 		return null;
@@ -52,7 +50,7 @@ const Blog = ({ blog, addLike, removeBlog, user }) => {
 				<br />
 				{blog?.user?.name}
 				<br />
-				{isCreator && <button onClick={deleteBlog}>remove</button>}
+				{isCreator && user && <button onClick={deleteBlog}>remove</button>}
 			</div>
 		</div>
 	);
