@@ -37,6 +37,7 @@ const App = () => {
 				setMessage(null);
 			}, 5000);
 		});
+		navigate("/");
 	};
 
 	const updateBlog = (blogObject, id) => {
@@ -49,6 +50,7 @@ const App = () => {
 	const deleteBlog = (id) => {
 		blogService.remove(id);
 		blogService.getAll().then((blogs) => setBlogs(blogs));
+		navigate("/");
 	};
 
 	const handleLogin = async (event) => {
@@ -78,12 +80,6 @@ const App = () => {
 		navigate("/login");
 	};
 
-	const blogForm = () => (
-		<Togglable buttonLabel="create blog">
-			<BlogForm createBlog={addBlog} />
-		</Togglable>
-	);
-
 	const padding = {
 		padding: 5,
 	};
@@ -104,12 +100,18 @@ const App = () => {
 					</Link>
 				)}
 				{user && (
+					<Link style={padding} to="/create">
+						new blog
+					</Link>
+				)}
+				{user && (
 					<button style={padding} onClick={handleLogout}>
 						logout
 					</button>
 				)}
 			</div>
 			<Routes>
+				<Route path="/create" element={<BlogForm createBlog={addBlog} />} />
 				<Route
 					path="/blogs/:id"
 					element={
