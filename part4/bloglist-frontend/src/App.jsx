@@ -64,6 +64,10 @@ const App = () => {
 			setUsername("");
 			setPassword("");
 			navigate("/");
+			setMessage(`${user.name} logged in`);
+			setTimeout(() => {
+				setMessage(null);
+			}, 5000);
 		} catch {
 			setMessage("wrong credentials");
 			setTimeout(() => {
@@ -83,7 +87,6 @@ const App = () => {
 	const padding = {
 		padding: 5,
 	};
-	console.log(user);
 	const match = useMatch("/blogs/:id");
 	const blog = match ? blogs.find((blog) => blog.id === match.params.id) : null;
 
