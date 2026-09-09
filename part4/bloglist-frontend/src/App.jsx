@@ -1,3 +1,4 @@
+import { Container } from "@mui/material";
 import { useEffect, useState } from "react";
 import { Link, Route, Routes, useMatch, useNavigate } from "react-router-dom";
 import Blog from "./components/Blog";
@@ -5,7 +6,6 @@ import BlogForm from "./components/BlogForm";
 import BlogList from "./components/BlogList";
 import LoginForm from "./components/LoginForm";
 import Notification from "./components/Notification";
-import Togglable from "./components/Togglable";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
 
@@ -91,70 +91,72 @@ const App = () => {
 	const blog = match ? blogs.find((blog) => blog.id === match.params.id) : null;
 
 	return (
-		<div>
-			<Notification className="notification" message={message} />
+		<Container>
 			<div>
-				<Link style={padding} to="/">
-					blogs
-				</Link>
-				{!user && (
-					<Link style={padding} to="/login">
-						login
+				<Notification className="notification" message={message} />
+				<div>
+					<Link style={padding} to="/">
+						blogs
 					</Link>
-				)}
-				{user && (
-					<Link style={padding} to="/create">
-						new blog
-					</Link>
-				)}
-				{user && (
-					<button style={padding} onClick={handleLogout}>
-						logout
-					</button>
-				)}
-			</div>
-			<Routes>
-				<Route path="/create" element={<BlogForm createBlog={addBlog} />} />
-				<Route
-					path="/blogs/:id"
-					element={
-						<Blog
-							blog={blog}
-							addLike={updateBlog}
-							removeBlog={deleteBlog}
-							user={user}
-						/>
-					}
-				/>
-				<Route
-					path="/login"
-					element={
-						!user && (
-							<LoginForm
-								handleLogin={handleLogin}
-								username={username}
-								password={password}
-								handleUsername={({ target }) => setUsername(target.value)}
-								handlePassword={({ target }) => setPassword(target.value)}
-							/>
-						)
-					}
-				/>
-				<Route
-					path="/"
-					element={
-						<div className="bloglist">
-							<BlogList
-								blogs={blogs}
-								updateBlog={updateBlog}
-								deleteBlog={deleteBlog}
+					{!user && (
+						<Link style={padding} to="/login">
+							login
+						</Link>
+					)}
+					{user && (
+						<Link style={padding} to="/create">
+							new blog
+						</Link>
+					)}
+					{user && (
+						<button style={padding} onClick={handleLogout}>
+							logout
+						</button>
+					)}
+				</div>
+				<Routes>
+					<Route path="/create" element={<BlogForm createBlog={addBlog} />} />
+					<Route
+						path="/blogs/:id"
+						element={
+							<Blog
+								blog={blog}
+								addLike={updateBlog}
+								removeBlog={deleteBlog}
 								user={user}
 							/>
-						</div>
-					}
-				/>
-			</Routes>
-		</div>
+						}
+					/>
+					<Route
+						path="/login"
+						element={
+							!user && (
+								<LoginForm
+									handleLogin={handleLogin}
+									username={username}
+									password={password}
+									handleUsername={({ target }) => setUsername(target.value)}
+									handlePassword={({ target }) => setPassword(target.value)}
+								/>
+							)
+						}
+					/>
+					<Route
+						path="/"
+						element={
+							<div className="bloglist">
+								<BlogList
+									blogs={blogs}
+									updateBlog={updateBlog}
+									deleteBlog={deleteBlog}
+									user={user}
+								/>
+							</div>
+						}
+					/>
+				</Routes>
+			</div>
+		</Container>
 	);
 };
 
