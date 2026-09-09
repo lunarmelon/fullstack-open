@@ -1,3 +1,4 @@
+import { Button, Card, CardContent, Typography } from "@mui/material";
 import { useParams } from "react-router-dom";
 
 const Blog = ({ blog, addLike, removeBlog, user }) => {
@@ -38,20 +39,52 @@ const Blog = ({ blog, addLike, removeBlog, user }) => {
 		}
 	};
 
+	const buttonStyle = { background: "rgb(255, 0, 0)" };
+
 	return (
 		<div className="blog">
-			<div style={blogStyle}>
-				<h1>
-					{blog.author}: {blog.title}
-				</h1>
-				<a href={blog.url}>{blog.url}</a>
-				<br />
-				likes {blog.likes} {user && <button onClick={updateBlog}>like</button>}
-				<br />
-				{blog?.user?.name}
-				<br />
-				{isCreator && user && <button onClick={deleteBlog}>remove</button>}
-			</div>
+			<Card variant="outlined" sx={{ marginTop: 1 }}>
+				<CardContent>
+					<Typography variant="h4">{blog.title}</Typography>
+					<p>by {blog.author}</p>
+					<p>
+						<a href={blog.url}>{blog.url}</a>
+					</p>
+					<p>Added by {blog?.user?.name}</p>
+					{blog.likes} likes
+					{user && (
+						<Button
+							color="inherit"
+							onClick={updateBlog}
+							sx={{
+								color: "blue", // Matches text color
+								borderColor: "blue", // Matches border color
+								borderWidth: 1, // Slightly thicker border to match the image
+								borderRadius: "5px", // Subtle rounded corners
+								borderStyle: "solid",
+								margin: 1,
+							}}
+						>
+							like
+						</Button>
+					)}
+					{isCreator && user && (
+						<Button
+							onClick={deleteBlog}
+							sx={{
+								color: "red", // Matches text color
+								borderColor: "red", // Matches border color
+								borderWidth: 1, // Slightly thicker border to match the image
+								borderRadius: "5px", // Subtle rounded corners
+								borderStyle: "solid",
+								margin: 1,
+							}}
+						>
+							remove
+						</Button>
+					)}
+				</CardContent>
+			</Card>
 		</div>
 	);
 };
