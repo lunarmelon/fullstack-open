@@ -1,4 +1,4 @@
-import { Container } from "@mui/material";
+import { AppBar, Button, Container, Toolbar } from "@mui/material";
 import { useEffect, useState } from "react";
 import { Link, Route, Routes, useMatch, useNavigate } from "react-router-dom";
 import Blog from "./components/Blog";
@@ -11,7 +11,7 @@ import loginService from "./services/login";
 
 const App = () => {
 	const [blogs, setBlogs] = useState([]);
-	const [message, setMessage] = useState(null);
+	const [notification, setNotification] = useState(null);
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
 	const [user, setUser] = useState(null);
@@ -30,12 +30,13 @@ const App = () => {
 	const addBlog = (blogObject) => {
 		blogService.create(blogObject).then((returnedBlog) => {
 			setBlogs(blogs.concat(returnedBlog));
-			setMessage(
-				`a new blog ${blogObject.title} by ${blogObject.author} added`,
-			);
+			setNotification({
+				text: `a new blog ${blogObject.title} by ${blogObject.author} added`,
+				type: "success",
+			});
 			setTimeout(() => {
-				setMessage(null);
-			}, 5000);
+				setNotification(null);
+			}, 4000);
 		});
 		navigate("/");
 	};
@@ -64,14 +65,14 @@ const App = () => {
 			setUsername("");
 			setPassword("");
 			navigate("/");
-			setMessage(`${user.name} logged in`);
+			setNotification({ text: `${user.name} logged in`, type: "success" });
 			setTimeout(() => {
-				setMessage(null);
+				setNotification(null);
 			}, 5000);
 		} catch {
-			setMessage("wrong credentials");
+			setNotification({ text: "wrong credentials", type: "error" });
 			setTimeout(() => {
-				setMessage(null);
+				setNotification(null);
 			}, 5000);
 		}
 	};
@@ -84,78 +85,77 @@ const App = () => {
 		navigate("/login");
 	};
 
-	const padding = {
-		padding: 5,
-	};
 	const match = useMatch("/blogs/:id");
 	const blog = match ? blogs.find((blog) => blog.id === match.params.id) : null;
 
+	const style = { "&:hover": { bgcolor: "rgba(255,255,255,0.3)" } };
+
 	return (
 		<Container>
-			<div>
-				<Notification className="notification" message={message} />
-				<div>
-					<Link style={padding} to="/">
+			<AppBar position="static">
+				<Toolbar>
+					<Button color="inherit" component={Link} to="/" sx={style}>
 						blogs
-					</Link>
+					</Button>
 					{!user && (
-						<Link style={padding} to="/login">
+						<Button color="inherit" component={Link} to="/login" sx={style}>
 							login
-						</Link>
+						</Button>
 					)}
 					{user && (
-						<Link style={padding} to="/create">
+						<Button color="inherit" component={Link} to="/create" sx={style}>
 							new blog
-						</Link>
+						</Button>
 					)}
 					{user && (
-						<button style={padding} onClick={handleLogout}>
+						<Button color="inherit" onClick={handleLogout} sx={style}>
 							logout
-						</button>
+						</Button>
 					)}
-				</div>
-				<Routes>
-					<Route path="/create" element={<BlogForm createBlog={addBlog} />} />
-					<Route
-						path="/blogs/:id"
-						element={
-							<Blog
-								blog={blog}
-								addLike={updateBlog}
-								removeBlog={deleteBlog}
+				</Toolbar>
+			</AppBar>
+			<Notification className="notification" notification={notification} />
+			<Routes>
+				<Route path="/create" element={<BlogForm createBlog={addBlog} />} />
+				<Route
+					path="/blogs/:id"
+					element={
+						<Blog
+							blog={blog}
+							addLike={updateBlog}
+							removeBlog={deleteBlog}
+							user={user}
+						/>
+					}
+				/>
+				<Route
+					path="/login"
+					element={
+						!user && (
+							<LoginForm
+								handleLogin={handleLogin}
+								username={username}
+								password={password}
+								handleUsername={({ target }) => setUsername(target.value)}
+								handlePassword={({ target }) => setPassword(target.value)}
+							/>
+						)
+					}
+				/>
+				<Route
+					path="/"
+					element={
+						<div className="bloglist">
+							<BlogList
+								blogs={blogs}
+								updateBlog={updateBlog}
+								deleteBlog={deleteBlog}
 								user={user}
 							/>
-						}
-					/>
-					<Route
-						path="/login"
-						element={
-							!user && (
-								<LoginForm
-									handleLogin={handleLogin}
-									username={username}
-									password={password}
-									handleUsername={({ target }) => setUsername(target.value)}
-									handlePassword={({ target }) => setPassword(target.value)}
-								/>
-							)
-						}
-					/>
-					<Route
-						path="/"
-						element={
-							<div className="bloglist">
-								<BlogList
-									blogs={blogs}
-									updateBlog={updateBlog}
-									deleteBlog={deleteBlog}
-									user={user}
-								/>
-							</div>
-						}
-					/>
-				</Routes>
-			</div>
+						</div>
+					}
+				/>
+			</Routes>
 		</Container>
 	);
 };
